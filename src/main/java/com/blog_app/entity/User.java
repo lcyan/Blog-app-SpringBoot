@@ -50,6 +50,7 @@ public class User {
 	@JsonProperty(value = "password")
     @NotBlank(message = "password must not be empty")
     @Size(min = 6 , message = "password must be minimum 6 length")
+	@JsonIgnore
 	private String password;
 	
 	@Column(name = "email")
