@@ -45,12 +45,15 @@ public class AuthController {
     // signup api
     @PostMapping("/signup")
     public ResponseEntity<Object> createUserHandler(@Valid @RequestBody User user) throws Exception {
-
+        LoginResponse loginResponse = new LoginResponse();
         User isExist = userService.findUserByEmail(user.getEmail());
 
         if (isExist != null){
         	logger.info("email already exist");
-            throw new Exception("email already exist with another Account");
+            loginResponse.setMessage("email already exist");
+            loginResponse.setStatus(400);
+            return new ResponseEntity<>(loginResponse, HttpStatus.BAD_REQUEST);
+//            throw new Exception("email already exist with another Account");
         }
         User createUser = new User();
         Role role = new Role();
@@ -63,14 +66,14 @@ public class AuthController {
 
         User savedUser = userService.saveUser(createUser);
 
-//        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword());
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-//        String jwt = JwtProvider.generateToken(authentication);
-        LoginResponse loginResponse = new LoginResponse();
+        String jwt = JwtProvider.generateToken(authentication);
+
         loginResponse.setMessage("User Saved Successfully");
         loginResponse.setStatus(201);
-//        loginResponse.setToken(jwt);
+        loginResponse.setToken(jwt);
         loginResponse.setToken_type("Bearer");
 
         return new ResponseEntity<>(loginResponse, HttpStatus.CREATED);
