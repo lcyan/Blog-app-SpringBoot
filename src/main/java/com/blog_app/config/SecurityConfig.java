@@ -2,6 +2,7 @@ package com.blog_app.config;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -61,11 +62,11 @@ public class SecurityConfig {
 	            @Override
 	            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 	                CorsConfiguration configuration = new CorsConfiguration();
-	                configuration.setAllowedOrigins(Arrays.asList("*"));
+	                configuration.setAllowedOrigins(List.of("http://localhost:5173"));
 	                configuration.setAllowedMethods(Collections.singletonList("*"));
 	                configuration.setAllowedHeaders(Collections.singletonList("*"));
 	                configuration.setAllowCredentials(true);
-	                configuration.setExposedHeaders(Arrays.asList("Authorization"));
+	                configuration.setExposedHeaders(List.of("Authorization"));
 	                configuration.setMaxAge(3600L);
 	                return configuration;
 	            }
