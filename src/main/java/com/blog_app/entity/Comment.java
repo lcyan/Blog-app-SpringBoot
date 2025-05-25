@@ -50,11 +50,11 @@ public class Comment {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "post_id")
-	@JsonIgnore
+//	@JsonIgnore
 	private Post post;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id")
-	@JsonIgnore
+//	@JsonIgnore
 	private User user;
 }
