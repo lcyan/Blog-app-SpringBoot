@@ -1,22 +1,14 @@
 package com.blog_app.entity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -61,4 +53,13 @@ public class Post {
 	//@OneToMany(mappedBy = "post" , cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
     //@JsonIgnore
 	//private List<Comment> comments = new ArrayList<>();
+
+	// count who liked the post
+	@ManyToMany
+	@JoinTable(
+			name = "post_likes",
+			joinColumns = @JoinColumn(name = "post_id"),
+			inverseJoinColumns = @JoinColumn(name = "user_id")
+	)
+	private Set<User> likedBy = new HashSet<>();
 }

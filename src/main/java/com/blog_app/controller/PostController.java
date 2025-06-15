@@ -1,7 +1,10 @@
 package com.blog_app.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.blog_app.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +41,9 @@ public class PostController {
 	
 	@Autowired
 	private CategoryService categoryService;
+
+	@Autowired
+	private CommentService commentService;
 	
 	//create post for blog
 	@PostMapping("/user/{userId}/category/{categoryId}")
@@ -224,6 +230,61 @@ public class PostController {
 			response.setData(e.getMessage());
 			
 			return new ResponseEntity<>(response , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PostMapping("/{postId}/like/user/{userId}")
+	public ResponseEntity<Object> likeOrUnlikePost(@PathVariable Long postId, @PathVariable Long userId) {
+		ResponseMessageVo response = new ResponseMessageVo();
+		try {
+			Post post = postService.findPost(postId);
+			User user = userService.findUserById(userId);
+
+			if (post.getLikedBy().contains(user)) {
+				post.getLikedBy().remove(user);
+				response.setMessage("Post unliked");
+			} else {
+				post.getLikedBy().add(user);
+				response.setMessage("Post liked");
+			}
+
+			postService.savePost(post);
+			response.setStatus(200);
+			response.setData(post.getLikedBy().size());
+
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			response.setMessage("Error updating like status");
+			response.setStatus(500);
+			response.setData(e.getMessage());
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	//get stats of post
+	@GetMapping("/{postId}/stats")
+	public ResponseEntity<Object> getPostStats(@PathVariable Long postId) {
+		ResponseMessageVo response = new ResponseMessageVo();
+		try {
+			Post post = postService.findPost(postId);
+			int likeCount = post.getLikedBy() != null ? post.getLikedBy().size() : 0;
+			int commentCount = commentService.countCommentsForPost(postId);
+
+			// Create a simple stats map
+			Map<String, Integer> stats = new HashMap<>();
+			stats.put("likes", likeCount);
+			stats.put("comments", commentCount);
+
+			response.setMessage("Post stats retrieved successfully");
+			response.setStatus(200);
+			response.setData(stats);
+
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			response.setMessage("Error retrieving post stats");
+			response.setStatus(500);
+			response.setData(e.getMessage());
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

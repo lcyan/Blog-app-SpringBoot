@@ -80,4 +80,11 @@ public class CommentServiceImpl  implements CommentService{
 		return comments;
 	}
 
+	@Override
+	public int countCommentsForPost(Long postId) {
+		int count = commentRepository.countCommentsByPostId(postId);
+		logger.info("count of comments for post id "+postId+" is "+count);
+		return count;
+	}
+
 }

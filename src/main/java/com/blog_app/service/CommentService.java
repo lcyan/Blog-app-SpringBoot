@@ -22,4 +22,6 @@ public interface CommentService {
 	List<Comment> AllComments();
 	
 	List<Comment> findAllCommentsForPost(Long postId);
+
+	int countCommentsForPost(Long postId);
 }
