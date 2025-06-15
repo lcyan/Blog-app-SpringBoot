@@ -1,6 +1,7 @@
 package com.blog_app.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.ManyToAny;
@@ -43,10 +44,10 @@ public class Comment {
 	private String comment;
 	@CreationTimestamp
 	@Column(name = "commented_at")
-	private LocalDate commentedAt;
+	private LocalDateTime commentedAt;
 	@UpdateTimestamp
 	@Column(name = "updated_at")
-	private LocalDate modifiedAt;
+	private LocalDateTime modifiedAt;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "post_id")
