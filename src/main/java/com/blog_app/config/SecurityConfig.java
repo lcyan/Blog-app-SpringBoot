@@ -4,11 +4,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,6 +26,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
 public class SecurityConfig {
 	
@@ -38,6 +41,9 @@ public class SecurityConfig {
            "/actuator/**"
 	};
 
+	@Autowired
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
+
 	  @Bean
 	    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
@@ -46,8 +52,21 @@ public class SecurityConfig {
 	                		//.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
 	                		.requestMatchers(SWAGGER_WHITELIST).permitAll()
 	                        .anyRequest().authenticated())
-	                .exceptionHandling(exception -> exception.accessDeniedPage("/403"))
-	                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+					.exceptionHandling(exception -> exception
+							.accessDeniedHandler((request, response, accessDeniedException) -> {
+								response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+								response.setContentType("application/json");
+								response.getWriter().write("""
+								{
+								  "status": 403,
+								  "error": "Forbidden",
+								  "message": "You are not authorized to perform this action."
+								}
+							""");
+							})
+					)
+
+					.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 	                .formLogin(login -> login.loginPage("/login")
 	                		.loginProcessingUrl("/login")
 	                		.successForwardUrl("/dashboard")

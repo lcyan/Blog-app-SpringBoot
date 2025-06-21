@@ -2,15 +2,22 @@ package com.blog_app.config;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
+import com.blog_app.entity.User;
+import com.blog_app.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.blog_app.constant.JwtConstant;
@@ -23,7 +30,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
+
+	@Autowired
+	private UserService userService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -37,10 +48,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	                SecretKey key = Keys.hmacShaKeyFor(JwtConstant.JWT_SECRET.getBytes());
 	                Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
 	                String email = String.valueOf(claims.get("email"));
-	                String authorities = String.valueOf(claims.get("authorities"));
+					User user = userService.findUserByEmail(email);
+	                if (user == null) {
+	                    throw new BadCredentialsException("User not found with email: " + email);
+	                }
 
-	                List<GrantedAuthority> auths = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
-	                Authentication authentication = new UsernamePasswordAuthenticationToken(email,null,auths);
+	                // Create an authentication object and set it in the security context
+					Set<GrantedAuthority> authorities = user.getRoles().stream()
+							.map((role) -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+							.collect(Collectors.toSet());
+	                Authentication authentication = new UsernamePasswordAuthenticationToken(email,null,authorities);
 	                SecurityContextHolder.getContext().setAuthentication(authentication);
 	            }catch (Exception e){
 	               throw  new BadCredentialsException("invalid token !!");
