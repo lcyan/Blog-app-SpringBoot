@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
 import com.blog_app.entity.User;
+import com.blog_app.service.TokenBlacklistService;
 import com.blog_app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -36,6 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private TokenBlacklistService tokenBlacklistService;
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
@@ -43,6 +47,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		 String jwt = request.getHeader(JwtConstant.JWT_HEADER);
 	        if (jwt != null){
 	            jwt = jwt.substring(7);
+
+				if (tokenBlacklistService.isTokenBlacklisted(jwt)) {
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+					response.setContentType("application/json");
+					response.getWriter().write("{\"error\": \"Token is blacklisted\"}");
+					return;
+				}
+
 
 	            try {
 	                SecretKey key = Keys.hmacShaKeyFor(JwtConstant.JWT_SECRET.getBytes());

@@ -2,8 +2,14 @@ package com.blog_app.controller;
 
 import java.util.Set;
 
+import com.blog_app.constant.JwtConstant;
+import com.blog_app.service.TokenBlacklistService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +50,9 @@ public class AuthController {
  
     @Autowired
     private CustomUserDetailsService customUserDetails;
+
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
 
     // signup api
     @PostMapping("/signup")
@@ -115,5 +124,30 @@ public class AuthController {
         }
 
         return new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header == null || !header.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("No token provided");
+        }
+
+        String token = header.substring(7);
+
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(JwtConstant.JWT_SECRET.getBytes()))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            long expiry = claims.getExpiration().getTime();
+            tokenBlacklistService.blacklistToken(token, expiry);
+            return ResponseEntity.ok("Logged out successfully");
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid token");
+        }
     }
 }
