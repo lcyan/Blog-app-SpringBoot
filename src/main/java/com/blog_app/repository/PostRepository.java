@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface PostRepository extends JpaRepository<Post,Long>{
 
+	List<Post> findAllByOrderByCreatedAtDesc(); // this will return all posts in descending order of creation time
 //	 code to manipulate posts
 	@Modifying
 	@Transactional
@@ -23,7 +24,7 @@ public interface PostRepository extends JpaRepository<Post,Long>{
 	void deletePost(Long id);
 	
 //	find posts by user
-	List<Post> findByUser(User user);
+	List<Post> findByUserOrderByCreatedAtDesc(User user);
 	// find posts by category
 	List<Post> findByCategory(Category category);
 	

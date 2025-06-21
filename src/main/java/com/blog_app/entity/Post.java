@@ -1,9 +1,7 @@
 package com.blog_app.entity;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Getter
 @Setter
@@ -49,6 +48,11 @@ public class Post {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "category_id")
 	private Category category;
+
+	@CreationTimestamp
+	@Column(name = "created_at")
+	@JsonProperty(value = "created_at")
+	private LocalDateTime createdAt;
 	
 	//@OneToMany(mappedBy = "post" , cascade = CascadeType.ALL,fetch = FetchType.EAGER,orphanRemoval = true)
     //@JsonIgnore

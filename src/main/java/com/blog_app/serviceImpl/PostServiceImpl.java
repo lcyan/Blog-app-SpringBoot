@@ -85,14 +85,14 @@ public class PostServiceImpl  implements PostService{
 
 	@Override
 	public List<Post> findAllPosts() {
-		List<Post> posts = postRepository.findAll();
+		List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
 		return posts;
 	}
 
 	@Override
 	public List<Post> findPostsByUser(Long userId) {
 		User user = userService.findUserById(userId);
-		List<Post> posts = postRepository.findByUser(user);
+		List<Post> posts = postRepository.findByUserOrderByCreatedAtDesc(user);
 		return posts;
 	}
 
