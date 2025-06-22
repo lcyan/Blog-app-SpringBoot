@@ -191,7 +191,7 @@ public class PostController {
 			if (post.getPostImage() != null) {
 				updatePost.setPostImage(post.getPostImage());	  
 			}
-		   if (post.isFavourite() == true) {
+		   if (post.isFavourite()) {
 			   updatePost.setFavourite(true);		
 		    }
 		   else {

@@ -22,6 +22,6 @@ public class SpringAopConfig {
     // Logging response after a method finishes execution
     @AfterReturning(pointcut = "execution(* com.blog_app.controller.*.*(..))", returning = "result")
     public void logAfterReturning(Object result) {
-        logger.info("API returned: " + result);
+        logger.info("API returned: {}", result);
     }
 }
