@@ -29,6 +29,11 @@ public class Post {
 	@Column(name = "post_title")
 	@NotBlank(message= "post title must not be blank")
 	private String title;
+
+	@Column(name = "post_description")
+	@NotBlank(message = "post description must not be blank")
+	private String description;
+
 	@Column(name = "post_image")
 	@JsonProperty(defaultValue = "")
 	private String postImage;
