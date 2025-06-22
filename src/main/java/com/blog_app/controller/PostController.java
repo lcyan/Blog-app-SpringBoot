@@ -57,6 +57,7 @@ public class PostController {
 		try {
 		Category category = categoryService.getCategorybyId(categoryId);
 		createPost.setTitle(post.getTitle());
+		createPost.setDescription(post.getDescription());
 		createPost.setData(post.getData());
 		createPost.setFavourite(post.isFavourite());
 		createPost.setPostImage(post.getPostImage());
@@ -183,6 +184,9 @@ public class PostController {
 		try {
 			if (post.getTitle() != null) {
 				updatePost.setTitle(post.getTitle());		
+			}
+			if (post.getDescription() != null) {
+				updatePost.setDescription(post.getDescription());
 			}
 			if (post.getData() != null) {
 				updatePost.setData(post.getData());		
