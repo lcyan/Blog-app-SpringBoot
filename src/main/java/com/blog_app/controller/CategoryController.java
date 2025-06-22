@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class CategoryController {
 	@Autowired
 	private CategoryService categoryService;
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<Object> createCategory(@Valid @RequestBody Category category){
 		ResponseMessageVo message = new ResponseMessageVo();
@@ -81,7 +83,8 @@ public class CategoryController {
 			return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{categoryId}")
 	public ResponseEntity<Object> updateCategory(@PathVariable Long categoryId , @RequestBody Category category){
 		ResponseMessageVo messageVo = new ResponseMessageVo();
@@ -101,7 +104,8 @@ public class CategoryController {
 			return new ResponseEntity<>(messageVo,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{categoryId}")
 	public ResponseEntity<Object> deleteCategory(@PathVariable Long categoryId){
 		ResponseMessageVo messageVo = new ResponseMessageVo();
