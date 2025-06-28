@@ -35,4 +35,7 @@ public interface PostRepository extends JpaRepository<Post,Long>{
 
 	// 2. find posts by content
     List<Post> findByDataContainingIgnoreCase(String keyword);
+
+	List<Post> findByLikedBy_Id(Long userId);
+
 }

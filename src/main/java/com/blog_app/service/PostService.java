@@ -20,7 +20,9 @@ public interface PostService {
 	List<Post> findAllPosts();
 	
 	List<Post> findPostsByUser(Long userId);
-	
+
+	List<Post> findLikedPostByUser(Long userId);
+
 	List<Post> findPostsByCategory(Long categoryId);
 	
 	List<Post> findPosts(String name);

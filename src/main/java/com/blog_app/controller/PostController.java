@@ -138,6 +138,25 @@ public class PostController {
 		
 		return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+
+	@GetMapping("/user/{userId}/liked/posts")
+	public ResponseEntity<Object> findLikedPostsByUser(@PathVariable Long userId){
+		ResponseMessageVo message = new ResponseMessageVo();
+		List<Post> posts = postService.findLikedPostByUser(userId);
+		if (posts != null) {
+			message.setMessage("posts found successfully");
+			message.setStatus(200);
+			message.setData(posts);
+
+
+			return new ResponseEntity<>(message,HttpStatus.OK);
+		}
+
+		message.setMessage("not found any posts");
+		message.setStatus(500);
+
+		return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 	
 	@GetMapping("/category/{categoryId}/posts")
 	public ResponseEntity<Object> findPostsByCategory(@PathVariable Long categoryId){

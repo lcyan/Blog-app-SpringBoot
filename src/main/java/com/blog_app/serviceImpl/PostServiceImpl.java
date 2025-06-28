@@ -97,6 +97,11 @@ public class PostServiceImpl  implements PostService{
 	}
 
 	@Override
+	public List<Post> findLikedPostByUser(Long userId) {
+		return postRepository.findByLikedBy_Id(userId);
+	}
+
+	@Override
 	public List<Post> findPostsByCategory(Long categoryId) {
 		Category category = categoryRepository.findById(categoryId).orElseThrow();
 		List<Post> posts = postRepository.findByCategory(category);
