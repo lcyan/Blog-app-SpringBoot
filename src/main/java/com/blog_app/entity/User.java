@@ -47,10 +47,10 @@ public class User {
 	@NotBlank(message = "username must not be empty")
 	private String username;
 	@Column(name = "password")
-	@JsonProperty(value = "password")
+	@JsonProperty(value = "password",access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "password must not be empty")
     @Size(min = 6 , message = "password must be minimum 6 length")
-	@JsonIgnore
+	//@JsonIgnore
 	private String password;
 	
 	@Column(name = "email")
