@@ -29,8 +29,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @EnableMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
 public class SecurityConfig {
-	
-	private static String[] SWAGGER_WHITELIST = {
+
+	private static final String[] SWAGGER_WHITELIST = {
 			"/swagger-ui.html",
 			"/v3/api-docs/**",
 			"/swagger-resources/**",
