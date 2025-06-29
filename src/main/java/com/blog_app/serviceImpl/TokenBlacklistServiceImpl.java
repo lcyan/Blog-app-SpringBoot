@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class TokenBlacklistServiceImpl implements TokenBlacklistService {
 
-    private Map<String, Long> blacklist = new ConcurrentHashMap<>();
+    private final Map<String, Long> blacklist = new ConcurrentHashMap<>();
 
     @Override
     public void blacklistToken(String token, long expiresAtMillis) {

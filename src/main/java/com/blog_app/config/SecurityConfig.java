@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -80,7 +81,7 @@ public class SecurityConfig {
 	    private CorsConfigurationSource CorsConfigSource() {
 	        return new CorsConfigurationSource() {
 	            @Override
-	            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+	            public CorsConfiguration getCorsConfiguration(@Nonnull HttpServletRequest request) {
 	                CorsConfiguration configuration = new CorsConfiguration();
 	                configuration.setAllowedOrigins(List.of("http://localhost:5173"));
 	                configuration.setAllowedMethods(Collections.singletonList("*"));
