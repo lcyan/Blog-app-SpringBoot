@@ -37,9 +37,7 @@ public class PostServiceImpl  implements PostService{
 	    
 	@Override
 	public Post findPost(Long id) {
-		Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException());
-		
-		return post;
+        return postRepository.findById(id).orElseThrow(PostNotFoundException::new);
 	}
 
 	@Override
@@ -48,7 +46,7 @@ public class PostServiceImpl  implements PostService{
 			postRepository.deletePost(id);
 			logger.info("post deleted Successfully");
 		}catch (Exception e) {
-			logger.info("error in delete post :"+e);
+			logger.info("error in delete post :{}",e.getMessage());
 		}
 		
 	}
@@ -59,7 +57,7 @@ public class PostServiceImpl  implements PostService{
 			postRepository.save(post);
 			logger.info("post saved successfully");
 		}catch (Exception e) {
-			logger.info("error in saving post :"+e);
+			logger.info("error in saving post : {} ",e.getMessage());
 		}
 		return post;
 	}
@@ -76,24 +74,22 @@ public class PostServiceImpl  implements PostService{
 			
 			postRepository.save(savedpost);
 			
-			logger.info("post saved successfully");
+			logger.info("post updated successfully");
 		}catch (Exception e) {
-			logger.info("error in saving post :"+e);
+			logger.info("error in saving post {}:",e.getMessage());
 		}
 		return savedpost;
 	}
 
 	@Override
 	public List<Post> findAllPosts() {
-		List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
-		return posts;
+        return postRepository.findAllByOrderByCreatedAtDesc();
 	}
 
 	@Override
 	public List<Post> findPostsByUser(Long userId) {
 		User user = userService.findUserById(userId);
-		List<Post> posts = postRepository.findByUserOrderByCreatedAtDesc(user);
-		return posts;
+        return postRepository.findByUserOrderByCreatedAtDesc(user);
 	}
 
 	@Override
@@ -104,8 +100,7 @@ public class PostServiceImpl  implements PostService{
 	@Override
 	public List<Post> findPostsByCategory(Long categoryId) {
 		Category category = categoryRepository.findById(categoryId).orElseThrow();
-		List<Post> posts = postRepository.findByCategory(category);
-		return posts;
+        return postRepository.findByCategory(category);
 	}
 
 	@Override
@@ -121,8 +116,7 @@ public class PostServiceImpl  implements PostService{
 		posts.addAll(postsByTitle);
 		posts.addAll(postsByContent);
 		//converte set to list cause not want to change all methods to return set from list
-		List<Post> matches = new ArrayList<>(posts);
-		return matches;
+        return new ArrayList<>(posts);
 	}
 
 }
