@@ -93,7 +93,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest){
-
+        LoginResponse authResponse = new LoginResponse();
+        try {
         String username = loginRequest.getEmail();
         String password = loginRequest.getPassword();
         Authentication authentication = authenticate(username,password);
@@ -101,14 +102,18 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = JwtProvider.generateToken(authentication);
-        LoginResponse authResponse = new LoginResponse();
         authResponse.setToken(jwt);
         authResponse.setMessage("User Logged in successfully");
         authResponse.setStatus(200);
         authResponse.setToken_type("Bearer");
-         logger.info("User logged in successfully");
+        logger.info("User logged in successfully");
         return new ResponseEntity<>(authResponse,HttpStatus.OK);
+    } catch (BadCredentialsException e) {
+        authResponse.setMessage(e.getMessage());
+        authResponse.setStatus(401);
+        return new ResponseEntity<>(authResponse,HttpStatus.UNAUTHORIZED);
     }
+}
 
     private Authentication authenticate(String username , String password) {
 
