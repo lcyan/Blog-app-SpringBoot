@@ -68,10 +68,9 @@ public class SecurityConfig {
 					)
 
 					.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-	                .formLogin(login -> login.loginPage("/login")
-	                		.loginProcessingUrl("/login")
-	                		.successForwardUrl("/dashboard")
-	                		.failureForwardUrl("/login?error"))
+//	                .formLogin(login -> login.loginPage("/login")
+//	                		.loginProcessingUrl("/login")
+//	                		.successForwardUrl("/dashboard"))
 	                .csrf(AbstractHttpConfigurer::disable)
 	                .cors(cors -> cors.configurationSource(CorsConfigSource()));
 
