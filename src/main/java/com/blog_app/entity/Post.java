@@ -38,9 +38,7 @@ public class Post {
 	@JsonProperty(defaultValue = "")
 	private String postImage;
 	
-	@Column(name = "is_favourite")
-	boolean isFavourite = false;
-	
+
 	@Column(name = "post_data")
 	@NotBlank(message = "post data must not be blank")
 	private String data;

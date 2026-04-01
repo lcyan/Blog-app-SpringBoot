@@ -70,8 +70,6 @@ public class PostServiceImpl  implements PostService{
 			savedpost.setTitle(post.getTitle());
 			savedpost.setData(post.getData());
 			savedpost.setPostImage(post.getPostImage());
-			savedpost.setFavourite(post.isFavourite());
-			
 			postRepository.save(savedpost);
 			
 			logger.info("post updated successfully");

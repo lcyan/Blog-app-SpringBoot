@@ -59,7 +59,6 @@ public class PostController {
 		createPost.setTitle(post.getTitle());
 		createPost.setDescription(post.getDescription());
 		createPost.setData(post.getData());
-		createPost.setFavourite(post.isFavourite());
 		createPost.setPostImage(post.getPostImage());
 		createPost.setUser(user);
 		createPost.setCategory(category);
@@ -214,12 +213,6 @@ public class PostController {
 			if (post.getPostImage() != null) {
 				updatePost.setPostImage(post.getPostImage());	  
 			}
-		   if (post.isFavourite()) {
-			   updatePost.setFavourite(true);		
-		    }
-		   else {
-		   updatePost.setFavourite(false);
-		   }
 		
 		
 		response.setMessage("post updated successfully");
