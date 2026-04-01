@@ -72,7 +72,6 @@ public class AuthController {
         role.setName("ADMIN");
     	createUser.setEmail(user.getEmail());
 		createUser.setUsername(user.getUsername());
-		createUser.setAbout(user.getAbout());
 		createUser.setPassword(passwordEncoder.encode(user.getPassword()));
 		createUser.setRoles(Set.of(role));
 

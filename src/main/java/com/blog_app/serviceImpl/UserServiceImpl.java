@@ -64,7 +64,6 @@ public class UserServiceImpl implements UserService{
 		User saveduser = findUserById(id);
 		try {
 		saveduser.setUsername(user.getUsername());
-		saveduser.setAbout(user.getAbout());
 		saveduser.setEmail(user.getEmail());
 		
 		userRepository.save(saveduser);

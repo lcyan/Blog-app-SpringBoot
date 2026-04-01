@@ -57,9 +57,7 @@ public class User {
 	@NotBlank(message ="email must not be empty")
 	@Email(message = "email must be valid")
 	private String email;
-	@Column(name = "about_user")
-	private String about;
-	
+
 	 @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	    @JoinTable(name = "users_roles",
 	        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),

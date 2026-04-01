@@ -123,9 +123,6 @@ public class UserController {
 	        if (user.getUsername() != null) {
 	            updateUser.setUsername(user.getUsername());
 	        }
-	        if (user.getAbout() != null) {
-	            updateUser.setAbout(user.getAbout());
-	        }
 	        if (user.getPassword() != null) {
 	            updateUser.setPassword(user.getPassword());
 	        }
