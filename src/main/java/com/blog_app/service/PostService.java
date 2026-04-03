@@ -3,7 +3,6 @@ package com.blog_app.service;
 import java.util.List;
 
 import com.blog_app.entity.Post;
-import com.blog_app.entity.User;
 
 public interface PostService {
 
@@ -25,6 +24,6 @@ public interface PostService {
 
 	List<Post> findPostsByCategory(Long categoryId);
 	
-	List<Post> findPosts(String name);
+	List<Post> findPosts(String query);
 }
 

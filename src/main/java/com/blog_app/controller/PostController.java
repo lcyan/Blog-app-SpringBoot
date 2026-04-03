@@ -176,9 +176,9 @@ public class PostController {
 	}
 	
 	@GetMapping("/search")
-	public ResponseEntity<Object> searchPosts(@RequestParam String  keyword){
+	public ResponseEntity<Object> searchPosts(@RequestParam String query){
 		ResponseMessageVo message = new ResponseMessageVo();
-		List<Post> posts = postService.findPosts(keyword);
+		List<Post> posts = postService.findPosts(query);
 		if (posts != null) {
 			message.setMessage("posts found successfully");
 			message.setStatus(200);

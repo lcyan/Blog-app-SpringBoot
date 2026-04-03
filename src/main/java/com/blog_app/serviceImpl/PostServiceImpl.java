@@ -1,9 +1,6 @@
 package com.blog_app.serviceImpl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +16,6 @@ import com.blog_app.repository.PostRepository;
 import com.blog_app.service.PostService;
 import com.blog_app.service.UserService;
 
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class PostServiceImpl  implements PostService{
@@ -102,19 +98,8 @@ public class PostServiceImpl  implements PostService{
 	}
 
 	@Override
-	public List<Post> findPosts(String name) {
-		// posts by title matching
-		List<Post> postsByTitle = postRepository.findByTitleContainingIgnoreCase(name);
-		
-		// posts by content matching
-		List<Post> postsByContent = postRepository.findByDataContainingIgnoreCase(name);
-		
-		// here we created set because if content and title both match found in posts then only one we get in list
-		Set<Post> posts = new HashSet<>();
-		posts.addAll(postsByTitle);
-		posts.addAll(postsByContent);
-		//converte set to list cause not want to change all methods to return set from list
-        return new ArrayList<>(posts);
+	public List<Post> findPosts(String query) {
+		return postRepository.findByTitleContainingIgnoreCaseOrDataContainingIgnoreCase(query, query);
 	}
 
 }

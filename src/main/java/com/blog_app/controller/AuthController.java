@@ -7,8 +7,6 @@ import com.blog_app.service.TokenBlacklistService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,13 +67,13 @@ public class AuthController {
         }
         User createUser = new User();
         Role role = new Role();
-        role.setName("ADMIN");
+        role.setName("USER");
     	createUser.setEmail(user.getEmail());
 		createUser.setUsername(user.getUsername());
 		createUser.setPassword(passwordEncoder.encode(user.getPassword()));
 		createUser.setRoles(Set.of(role));
 
-        User savedUser = userService.saveUser(createUser);
+        userService.saveUser(createUser);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
