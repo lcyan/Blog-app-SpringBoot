@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.blog_app.config.JwtProvider;
 import com.blog_app.service.CommentService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -195,10 +196,29 @@ public class PostController {
 	
 	
 	@PutMapping("/{postId}")
-	public ResponseEntity<Object> updatePost(@RequestBody Post post, @PathVariable Long postId){
+	public ResponseEntity<Object> updatePost(@RequestBody Post post, @PathVariable Long postId, HttpServletRequest request){
 		
 		Post updatePost = postService.findPost(postId);
 		ResponseMessageVo response = new ResponseMessageVo();
+		
+		// Verify the requester is the post author
+		try {
+			String authHeader = request.getHeader("Authorization");
+			if (authHeader != null && authHeader.startsWith("Bearer ")) {
+				String email = JwtProvider.getEmailFromToken(authHeader);
+				User requestingUser = userService.findUserByEmail(email);
+				if (requestingUser == null || !requestingUser.getId().equals(updatePost.getUser().getId())) {
+					response.setMessage("You are not authorized to edit this post");
+					response.setStatus(403);
+					return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+				}
+			}
+		} catch (Exception e) {
+			response.setMessage("Authorization check failed");
+			response.setStatus(403);
+			return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+		}
+		
 		try {
 			if (post.getTitle() != null) {
 				updatePost.setTitle(post.getTitle());		
@@ -220,7 +240,7 @@ public class PostController {
 		response.setData(updatePost);
 		postService.updatePost(updatePost , postId);
 		
-		return new ResponseEntity<>(response,HttpStatus.CREATED);
+		return new ResponseEntity<>(response,HttpStatus.OK);
 		}catch (Exception e) {
 			response.setMessage("error in update post");
 			response.setStatus(500);
@@ -230,12 +250,31 @@ public class PostController {
 		}
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	/**
+	 * Delete a post — allowed for ADMINs or the post's author.
+	 */
 	@DeleteMapping("/{postId}")
-	public ResponseEntity<Object> deletePostById(@PathVariable Long postId){
+	public ResponseEntity<Object> deletePostById(@PathVariable Long postId, HttpServletRequest request){
 		
 		ResponseMessageVo response = new ResponseMessageVo();
 		try {
+			Post post = postService.findPost(postId);
+			
+			// Check: must be ADMIN or the post's author
+			boolean isAdmin = request.isUserInRole("ROLE_ADMIN");
+			if (!isAdmin) {
+				String authHeader = request.getHeader("Authorization");
+				if (authHeader != null && authHeader.startsWith("Bearer ")) {
+					String email = JwtProvider.getEmailFromToken(authHeader);
+					User requestingUser = userService.findUserByEmail(email);
+					if (requestingUser == null || !requestingUser.getId().equals(post.getUser().getId())) {
+						response.setMessage("You are not authorized to delete this post");
+						response.setStatus(403);
+						return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+					}
+				}
+			}
+			
 			postService.deletePost(postId);
 			response.setMessage("post deleted successfully");
 			response.setStatus(200);
