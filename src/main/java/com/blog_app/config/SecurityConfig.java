@@ -1,7 +1,6 @@
 package com.blog_app.config;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import jakarta.annotation.Nonnull;
@@ -82,9 +81,15 @@ public class SecurityConfig {
 	            @Override
 	            public CorsConfiguration getCorsConfiguration(@Nonnull HttpServletRequest request) {
 	                CorsConfiguration configuration = new CorsConfiguration();
-	                configuration.setAllowedOrigins(Collections.singletonList("*"));
-	                configuration.setAllowedMethods(Collections.singletonList("*"));
-	                configuration.setAllowedHeaders(Collections.singletonList("*"));
+	                // allowedOrigins("*") + allowCredentials(true) is rejected by browsers.
+	                // Explicitly list allowed origins instead.
+	                configuration.setAllowedOrigins(List.of(
+	                    "http://localhost:5173",
+	                    "http://localhost:5174",
+	                    "http://localhost:3000"
+	                ));
+	                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+	                configuration.setAllowedHeaders(List.of("*"));
 	                configuration.setAllowCredentials(true);
 	                configuration.setExposedHeaders(List.of("Authorization"));
 	                configuration.setMaxAge(3600L);
