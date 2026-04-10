@@ -1,7 +1,6 @@
 package com.blog_app.serviceImpl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,46 +32,43 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public User findUserByEmail(String email) {
 		User user = userRepository.findByEmail(email);
-		logger.info("user founf successfully using given email");
+		logger.info("user found successfully using given email");
 		return user;
 	}
 
 	@Override
 	public User saveUser(User user) {
-		try {
-			userRepository.save(user);
-			logger.info("user data saved successfully");
-		}catch (Exception e) {
-			logger.info("error in user data saving");
-		}
-		return user;
+		User saved = userRepository.save(user);
+		logger.info("user data saved successfully");
+		return saved;
 	}
 
 	@Override
 	public void deleteUser(Long id) {
-		try {
-			userRepository.deleteById(id);
-			logger.info("user deleted successfully");
-		}catch (Exception e) {
-			logger.info("error in delete user");
-		}
+		// Ensure user exists before deletion
+		findUserById(id);
+		userRepository.deleteById(id);
+		logger.info("user deleted successfully with id: {}", id);
 	}
 
 	@Override
-	public User updateUser(User user , Long id) {
-		
+	public User updateUser(User user, Long id) {
 		User saveduser = findUserById(id);
-		try {
-		saveduser.setUsername(user.getUsername());
-		saveduser.setEmail(user.getEmail());
-		
-		userRepository.save(saveduser);
-		
-		logger.info("user updated successfully");
-		}catch (Exception e) {
-			logger.info("error in update user");
+
+		if (user.getUsername() != null && !user.getUsername().isBlank()) {
+			saveduser.setUsername(user.getUsername());
 		}
-		return saveduser;
+		if (user.getEmail() != null && !user.getEmail().isBlank()) {
+			saveduser.setEmail(user.getEmail());
+		}
+		// Password is expected to arrive already encoded by the caller (UserController)
+		if (user.getPassword() != null && !user.getPassword().isBlank()) {
+			saveduser.setPassword(user.getPassword());
+		}
+
+		User updated = userRepository.save(saveduser);
+		logger.info("user updated successfully with id: {}", id);
+		return updated;
 	}
 
 	@Override

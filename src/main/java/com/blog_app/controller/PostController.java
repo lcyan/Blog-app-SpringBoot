@@ -138,75 +138,69 @@ public class PostController {
 	@GetMapping("/user/{userId}/posts")
 	public ResponseEntity<Object> findPostsByUser(@PathVariable Long userId){
 		ResponseMessageVo message = new ResponseMessageVo();
-		List<Post> posts = postService.findPostsByUser(userId);
-		if (posts != null) {
+		try {
+			List<Post> posts = postService.findPostsByUser(userId);
 			message.setMessage("posts found successfully");
 			message.setStatus(200);
 			message.setData(posts);
-			
-			
-			return new ResponseEntity<>(message,HttpStatus.OK);
+			return new ResponseEntity<>(message, HttpStatus.OK);
+		} catch (Exception e) {
+			message.setMessage("Error fetching posts for user");
+			message.setStatus(500);
+			message.setData(e.getMessage());
+			return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
-		message.setMessage("not found any posts");
-		message.setStatus(500);
-		
-		return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@GetMapping("/user/{userId}/liked/posts")
 	public ResponseEntity<Object> findLikedPostsByUser(@PathVariable Long userId){
 		ResponseMessageVo message = new ResponseMessageVo();
-		List<Post> posts = postService.findLikedPostByUser(userId);
-		if (posts != null) {
+		try {
+			List<Post> posts = postService.findLikedPostByUser(userId);
 			message.setMessage("posts found successfully");
 			message.setStatus(200);
 			message.setData(posts);
-
-
-			return new ResponseEntity<>(message,HttpStatus.OK);
+			return new ResponseEntity<>(message, HttpStatus.OK);
+		} catch (Exception e) {
+			message.setMessage("Error fetching liked posts for user");
+			message.setStatus(500);
+			message.setData(e.getMessage());
+			return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		message.setMessage("not found any posts");
-		message.setStatus(500);
-
-		return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@GetMapping("/category/{categoryId}/posts")
 	public ResponseEntity<Object> findPostsByCategory(@PathVariable Long categoryId){
 		ResponseMessageVo message = new ResponseMessageVo();
-		List<Post> posts = postService.findPostsByCategory(categoryId);
-		if (posts != null) {
+		try {
+			List<Post> posts = postService.findPostsByCategory(categoryId);
 			message.setMessage("posts found successfully");
 			message.setStatus(200);
 			message.setData(posts);
-			
-			return new ResponseEntity<>(message,HttpStatus.OK);
+			return new ResponseEntity<>(message, HttpStatus.OK);
+		} catch (Exception e) {
+			message.setMessage("Error fetching posts for category");
+			message.setStatus(500);
+			message.setData(e.getMessage());
+			return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
-		message.setMessage("not found any posts");
-		message.setStatus(500);
-		
-		return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@GetMapping("/search")
 	public ResponseEntity<Object> searchPosts(@RequestParam String query){
 		ResponseMessageVo message = new ResponseMessageVo();
-		List<Post> posts = postService.findPosts(query);
-		if (posts != null) {
+		try {
+			List<Post> posts = postService.findPosts(query);
 			message.setMessage("posts found successfully");
 			message.setStatus(200);
 			message.setData(posts);
-			
-			return new ResponseEntity<>(message,HttpStatus.OK);
+			return new ResponseEntity<>(message, HttpStatus.OK);
+		} catch (Exception e) {
+			message.setMessage("Error searching posts");
+			message.setStatus(500);
+			message.setData(e.getMessage());
+			return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
-		message.setMessage("not found any posts");
-		message.setStatus(500);
-		
-		return new ResponseEntity<>(message,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	

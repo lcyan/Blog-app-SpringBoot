@@ -109,13 +109,37 @@ public class UserController {
     }
 
     /**
-     * Update a user's profile. Password is re-encoded if provided.
+     * Update a user's profile. Only the account owner (or an ADMIN) may update.
+     * Password is re-encoded before persisting.
      */
     @PutMapping("/users/{userId}")
-    public ResponseEntity<Object> update(@RequestBody User user, @PathVariable Long userId) {
+    public ResponseEntity<Object> update(@RequestBody User user, @PathVariable Long userId,
+                                         HttpServletRequest request) {
         ResponseMessageVo response = new ResponseMessageVo();
-        User updateUser = userService.findUserById(userId);
 
+        // Authorization: requester must match userId or be an admin
+        try {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                response.setMessage("Missing or invalid Authorization header");
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+            String email = JwtProvider.getEmailFromToken(authHeader);
+            User requestingUser = userService.findUserByEmail(email);
+            boolean isAdmin = request.isUserInRole("ROLE_ADMIN");
+            if (requestingUser == null || (!requestingUser.getId().equals(userId) && !isAdmin)) {
+                response.setMessage("You are not authorized to update this user's profile");
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+        } catch (Exception e) {
+            response.setMessage("Authorization check failed");
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+
+        User updateUser = userService.findUserById(userId);
         if (updateUser == null) {
             response.setMessage("User not found");
             response.setStatus(HttpStatus.NOT_FOUND.value());
@@ -123,10 +147,10 @@ public class UserController {
         }
 
         try {
-            if (user.getEmail() != null) {
+            if (user.getEmail() != null && !user.getEmail().isBlank()) {
                 updateUser.setEmail(user.getEmail());
             }
-            if (user.getUsername() != null) {
+            if (user.getUsername() != null && !user.getUsername().isBlank()) {
                 updateUser.setUsername(user.getUsername());
             }
             // Password must be re-encoded before storing
@@ -134,12 +158,14 @@ public class UserController {
                 updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
 
-            userService.saveUser(updateUser);
+            User saved = userService.saveUser(updateUser);
+
+            // Never expose the password hash in the response
+            saved.setPassword(null);
 
             response.setMessage("User updated successfully");
             response.setStatus(HttpStatus.OK.value());
-            response.setData(updateUser);
-
+            response.setData(saved);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.setMessage("Error updating user");
