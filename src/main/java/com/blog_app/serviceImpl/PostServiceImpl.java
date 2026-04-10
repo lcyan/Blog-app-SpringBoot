@@ -5,6 +5,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.blog_app.entity.Category;
@@ -78,6 +80,11 @@ public class PostServiceImpl  implements PostService{
 	@Override
 	public List<Post> findAllPosts() {
         return postRepository.findAllByOrderByCreatedAtDesc();
+	}
+
+	@Override
+	public Page<Post> findAllPostsPaginated(Pageable pageable) {
+		return postRepository.findAll(pageable);
 	}
 
 	@Override

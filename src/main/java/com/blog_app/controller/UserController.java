@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blog_app.config.JwtProvider;
 import com.blog_app.constant.AppConstants;
 import com.blog_app.entity.User;
 import com.blog_app.response.ResponseMessageVo;
 import com.blog_app.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(AppConstants.API)
@@ -30,6 +33,38 @@ public class UserController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    /**
+     * Get currently authenticated user's profile from JWT token.
+     */
+    @GetMapping("/users/me")
+    public ResponseEntity<Object> getCurrentUser(HttpServletRequest request) {
+        ResponseMessageVo response = new ResponseMessageVo();
+        try {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                response.setMessage("No valid Authorization header");
+                response.setStatus(401);
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+            String email = JwtProvider.getEmailFromToken(authHeader);
+            User user = userService.findUserByEmail(email);
+            if (user == null) {
+                response.setMessage("User not found");
+                response.setStatus(404);
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+            response.setMessage("User retrieved successfully");
+            response.setStatus(200);
+            response.setData(user);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.setMessage("Error retrieving current user");
+            response.setStatus(500);
+            response.setData(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     /**
      * Get all users — restricted to ADMIN only.

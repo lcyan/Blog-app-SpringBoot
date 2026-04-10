@@ -8,6 +8,10 @@ import com.blog_app.config.JwtProvider;
 import com.blog_app.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -81,22 +85,33 @@ public class PostController {
 	
 	
 	@GetMapping
-	public ResponseEntity<Object> getAllPosts(){
-		
+	public ResponseEntity<Object> getAllPosts(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+
 		ResponseMessageVo response = new ResponseMessageVo();
 		try {
-			List<Post> posts = postService.findAllPosts();
+			Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+			Page<Post> postPage = postService.findAllPostsPaginated(pageable);
+
+			Map<String, Object> data = new HashMap<>();
+			data.put("data", postPage.getContent());
+			data.put("totalPages", postPage.getTotalPages());
+			data.put("totalElements", postPage.getTotalElements());
+			data.put("currentPage", postPage.getNumber());
+			data.put("pageSize", postPage.getSize());
+
 			response.setMessage("posts found successfully");
 			response.setStatus(200);
-			response.setData(posts);
-			
-			return new ResponseEntity<>(response , HttpStatus.OK);
-		}catch (Exception e) {
+			response.setData(data);
+
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
 			response.setMessage("error in find post");
 			response.setStatus(404);
 			response.setData(e.getMessage());
-			
-			return new ResponseEntity<>(response , HttpStatus.NOT_FOUND);
+
+			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 	}
 	

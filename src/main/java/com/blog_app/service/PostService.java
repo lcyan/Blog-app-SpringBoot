@@ -2,6 +2,9 @@ package com.blog_app.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.blog_app.entity.Post;
 
 public interface PostService {
@@ -17,6 +20,8 @@ public interface PostService {
 	Post updatePost(Post post , Long id);
 	
 	List<Post> findAllPosts();
+
+	Page<Post> findAllPostsPaginated(Pageable pageable);
 	
 	List<Post> findPostsByUser(Long userId);
 
@@ -26,4 +31,3 @@ public interface PostService {
 	
 	List<Post> findPosts(String query);
 }
-
