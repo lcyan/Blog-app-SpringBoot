@@ -30,7 +30,7 @@ public class Post {
 	@NotBlank(message= "post title must not be blank")
 	private String title;
 
-	@Column(name = "post_description")
+	@Column(name = "post_description", columnDefinition = "TEXT")
 	@NotBlank(message = "post description must not be blank")
 	private String description;
 
@@ -39,7 +39,7 @@ public class Post {
 	private String postImage;
 	
 
-	@Column(name = "post_data")
+	@Column(name = "post_data", columnDefinition = "LONGTEXT")
 	@NotBlank(message = "post data must not be blank")
 	private String data;
     

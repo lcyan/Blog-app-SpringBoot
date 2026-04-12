@@ -48,7 +48,7 @@ public class SecurityConfig {
 	    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
 	        http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-	                .authorizeHttpRequests(request -> request.requestMatchers("/api/auth/**","/css/**","/js/**","/image/**","/static/**").permitAll()
+	                .authorizeHttpRequests(request -> request.requestMatchers("/api/auth/**","/css/**","/js/**","/image/**","/static/**", "/api/upload", "/uploads/**").permitAll()
 	                		//.requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
 	                		.requestMatchers(SWAGGER_WHITELIST).permitAll()
 	                        .anyRequest().authenticated())
@@ -85,6 +85,7 @@ public class SecurityConfig {
 	                // Explicitly list allowed origins instead.
 	                configuration.setAllowedOrigins(List.of(
 	                    "http://localhost:5173",
+	                    "http://127.0.0.1:5173",
 	                    "http://localhost:5174",
 	                    "http://localhost:3000"
 	                ));

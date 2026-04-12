@@ -12,6 +12,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -41,4 +43,8 @@ public class Category {
 	 * 
 	 * @JsonIgnore private List<Post> posts;
 	 */
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "parent_id")
+	private Category parentCategory;
 }
